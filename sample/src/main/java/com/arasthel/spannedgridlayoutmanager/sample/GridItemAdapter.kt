@@ -1,9 +1,13 @@
 package com.arasthel.spannedgridlayoutmanager.sample
 
 import android.graphics.Color
-import android.support.v7.widget.RecyclerView
+import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
+import androidx.appcompat.widget.AppCompatTextView
+import androidx.appcompat.widget.LinearLayoutCompat
+import androidx.recyclerview.widget.RecyclerView
 
 /**
  * Created by Jorge Martín on 24/5/17.
@@ -21,17 +25,25 @@ class GridItemAdapter: RecyclerView.Adapter<GridItemViewHolder>() {
         return position.toLong()
     }
 
-    val colors = arrayOf(Color.RED, Color.GREEN, Color.BLUE, Color.CYAN, Color.DKGRAY, Color.MAGENTA, Color.YELLOW)
+    private val colors = arrayOf(Color.RED, Color.GREEN, Color.BLUE, Color.CYAN, Color.DKGRAY, Color.MAGENTA, Color.YELLOW)
 
     override fun onBindViewHolder(holder: GridItemViewHolder, position: Int) {
-        (holder.itemView as? GridItemView)?.setTitle("$position")
 
-        holder.itemView.setBackgroundColor(
+        holder.positionText.text = "$position"
+
+        holder.layout.setBackgroundColor(
                 colors[position % colors.size]
         )
 
-        holder.itemView.setOnClickListener {
+        holder.layout.setOnClickListener {
             clickedItems[position] = !clickedItems[position]
+            if (clickedItems[position]) {
+                holder.layout.layoutParams.width *= 2
+                holder.layout.layoutParams.height *= 2
+            } else {
+                holder.layout.layoutParams.width = 225
+                holder.layout.layoutParams.height = 296
+            }
             notifyItemChanged(position)
         }
     }
@@ -45,10 +57,12 @@ class GridItemAdapter: RecyclerView.Adapter<GridItemViewHolder>() {
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GridItemViewHolder {
-        val gridItemView = GridItemView(parent.context)
-
+        val gridItemView = LayoutInflater.from(parent.context).inflate(R.layout.grid_view_item, parent, false)
         return GridItemViewHolder(gridItemView)
     }
 }
 
-class GridItemViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
+open class GridItemViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    open val positionText: AppCompatTextView = itemView.findViewById(R.id.text)
+    open val layout: LinearLayout = itemView.findViewById(R.id.layout)
+}
