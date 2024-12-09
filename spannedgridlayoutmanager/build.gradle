@@ -1,28 +1,5 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
-apply plugin: 'org.jetbrains.dokka-android'
-
-task dokkaJavadoc(type: org.jetbrains.dokka.gradle.DokkaAndroidTask) {
-    delete "$rootDir/docs"
-
-    outputFormat = 'html'
-    outputDirectory = "$rootDir/docs"
-
-    externalDocumentationLink {
-        url = new URL("https://developer.android.com/reference/")
-    }
-
-    includeNonPublic = false
-
-    // Always recreate documentation
-    outputs.upToDateWhen { return false }
-}
-
-afterEvaluate {
-    if (project.hasProperty("javadocJar")) {
-        tasks.javadocJar.dependsOn dokkaJavadoc
-    }
-}
 
 ext {
     bintrayRepo = 'maven'
@@ -49,12 +26,11 @@ ext {
 }
 
 android {
-    compileSdkVersion 28
-    buildToolsVersion buildtools_version
-
+    compileSdk 34
     defaultConfig {
-        minSdkVersion 14
-        targetSdkVersion 28
+        minSdkVersion 29
+        //noinspection ExpiredTargetSdkVersion
+        targetSdk 29
         versionCode 1
         versionName libraryVersion
     }
@@ -71,10 +47,11 @@ tasks.withType(Javadoc) {
 }
 
 dependencies {
-    implementation "com.android.support:recyclerview-v7:$support_library_version"
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation("androidx.lifecycle:lifecycle-viewmodel:2.8.6")
+    implementation("androidx.lifecycle:lifecycle-livedata:2.8.6")
+    implementation("androidx.core:core-ktx:1.13.1")
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    implementation 'androidx.appcompat:appcompat:1.7.0'
+    implementation 'androidx.appcompat:appcompat-resources:1.7.0'
+    implementation 'androidx.preference:preference-ktx:1.2.1'
 }
-
-// Bintray Upload
-apply from: '../gradle/tools/bintrayv1.gradle'
-apply from: '../gradle/tools/installv1.gradle'
